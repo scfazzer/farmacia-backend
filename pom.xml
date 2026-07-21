@@ -12,7 +12,7 @@
     <groupId>com.farmaciasalud</groupId>
     <artifactId>farmacia-salud-api</artifactId>
     <version>2.0.0</version>
-    <n>farmacia-salud-api</n>
+    <name>farmacia-salud-api</name>
     <description>Farmacia SaludPlus API v2 — Backend con buenas prácticas</description>
     <properties>
         <java.version>25</java.version>
