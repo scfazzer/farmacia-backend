@@ -1,4 +1,5 @@
 package com.farmaciasalud.config;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,31 +15,43 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import com.farmaciasalud.service.JwtFilter;
+
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired private JwtFilter jwtFilter;
+    @Autowired 
+    private JwtFilter jwtFilter;
 
     @Bean
-    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public PasswordEncoder passwordEncoder() { 
+        return new BCryptPasswordEncoder(); 
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(
+        
+        // Usamos setAllowedOriginPatterns para permitir patrones con * y subdominios de Cloudflare
+        config.setAllowedOriginPatterns(List.of(
             "http://localhost:4200",
             "http://127.0.0.1:4200",
-            "http://localhost:5173",      // ← agregar esto
-            "http://127.0.0.1:5173"       // ← y esto
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            "https://*.pages.dev",                   // Permite cualquier subdominio de Cloudflare Pages
+            "https://9ec943b9.farmacia-frontend-93l.pages.dev/"  // Dominio base de producción (sin barra final)
         ));
-        config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        // Aplicamos la configuración CORS a todas las rutas de la API
+        source.registerCorsConfiguration("/**", config);
+        
         return source;
     }
 
@@ -54,10 +67,10 @@ public class SecurityConfig {
                 .requestMatchers("/api/usuarios/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PATCH, "/api/ventas/*/anular").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-                //.requestMatchers("/api/dashboard/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 }
