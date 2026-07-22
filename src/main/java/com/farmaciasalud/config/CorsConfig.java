@@ -10,7 +10,7 @@ public class CorsConfig implements WebMvcConfigurer {
         registry.addMapping("/api/**")
                 // Angular corre por defecto en :4200
                 .allowedOrigins("http://localhost:4200", "http://127.0.0.1:4200",
-                                "http://localhost", "http://127.0.0.1")
+                                "http://localhost", "http://127.0.0.1", "https://farmacia-frontend-93l.pages.dev/")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);
